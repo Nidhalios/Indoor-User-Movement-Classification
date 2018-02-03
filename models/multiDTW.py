@@ -1,8 +1,8 @@
-'''
+"""
 Created on Dec 16, 2016
 Python 3.5.2
 @author: Nidhalios
-'''
+"""
 
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
