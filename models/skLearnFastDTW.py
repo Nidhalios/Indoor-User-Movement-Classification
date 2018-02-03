@@ -68,6 +68,7 @@ def classification(series):
 
 
 def main():
+    """Where the magic happens"""
     series = load_data()
     s = series[:10]
     classification(s)
