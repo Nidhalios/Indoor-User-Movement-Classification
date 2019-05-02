@@ -1,8 +1,9 @@
 """
-Project: Indoor-User-Movement-Classification
-Author: Nidhalios
-Created On: 2/3/18
+Created on Dec 14, 2016
+Python 3.5.2
+@author: Nidhalios
 """
+
 import numpy as np
 
 

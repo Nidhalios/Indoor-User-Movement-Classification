@@ -4,27 +4,32 @@ Python 3.5.2
 @author: Nidhalios
 """
 
+import numpy as np
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from sklearn.metrics import roc_auc_score, accuracy_score, precision_score
 
+from models.load_data import load_data
+from models.utils import normalize
+
 
 def k_fold_generation(X, K, randomise=False):
     """
-	Generates K (training, validation) pairs from the items in X.
-	Each pair is a partition of X, where validation is an iterable
-	of length len(X)/K. So each training iterable is of length (K-1)*len(X)/K.
-	If randomise is true, a copy of X is shuffled before partitioning,
-	otherwise its order is preserved in training and validation.
+        Generates K (training, validation) pairs from the items in X.
+        Each pair is a partition of X, where validation is an iterable
+        of length len(X)/K. So each training iterable is of length (K-1)*len(X)/K.
+        If randomise is true, a copy of X is shuffled before partitioning,
+        otherwise its order is preserved in training and validation.
 	"""
     if randomise:
-        from random import shuffle;
-        X = list(X);
+        from random import shuffle
+        X = list(X)
         shuffle(X)
     for k in iter(range(K)):
         training = [x for i, x in enumerate(X) if i % K != k]
         validation = [x for i, x in enumerate(X) if i % K == k]
         yield training, validation
+
 
 def predict(test, train_tuples, K):
     scores = []
@@ -51,7 +56,7 @@ def predict(test, train_tuples, K):
     return test[0], int(KNN_prediction), float(KNN_proba)
 
 
-def cross_validation(data, K=5):
+def cross_valid(data, K=5):
     j = 1
     acc_tab = []
     prec_tab = []
@@ -75,3 +80,13 @@ def cross_validation(data, K=5):
     print('Accuracy Score : '.format(sum(acc_tab) / len(acc_tab)))
     print('Precision Score : '.format(sum(prec_tab) / len(prec_tab)))
     print('ROC AUC Score : '.format(sum(roc_auc_tab) / len(roc_auc_tab)))
+
+
+def main():
+    series = load_data()
+    data = series.apply(lambda x: (x['id'], int(x['target']), normalize(np.array(x['series']))), axis=1)
+    print(data[0])
+    cross_valid(data, 5)
+
+
+if __name__ == '__main__': main()
