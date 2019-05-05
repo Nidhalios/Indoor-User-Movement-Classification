@@ -43,7 +43,7 @@ def classify(series):
     # Mapping table for target classes
     labels = {1: 'Changed', -1: 'Unchanged'}
 
-    # Stratified (by target class) Shuffle (random) sampler for train/test data
+    # Stratified (by target class) Shuffle (random) split for train/test data
     targets = series['target'].values.tolist()
     sss = StratifiedShuffleSplit(test_size=0.33, random_state=0)
     train_idx, test_idx = next(sss.split([[0]] * len(targets), targets))
@@ -55,16 +55,35 @@ def classify(series):
     testX = test_set['series'].apply(lambda x: get_features(x)).tolist()
     testY = test_set['target'].values.tolist()
 
-    neigh = KNeighborsClassifier(n_neighbors=5, algorithm='ball_tree', metric='euclidean')
-    neigh.fit(trainX, trainY)
-    predY = neigh.predict(testX)
+    # KNN algorithm in a feature based approach this time
+    # Let's try also to find the best combination of hyperparameters (number of neighbors, neighbors weights,
+    # and distance metric) to get the most out of our model.
+
+    from sklearn.model_selection import GridSearchCV
+
+    params_grid = {
+        'n_neighbors': [3, 5, 7, 11],
+        'weights': ['uniform', 'distance'],
+        'metric': ['euclidean', 'manhattan']
+    }
+
+    # Here I chose the f1 metric as the score to maximize in this gridsearch, as it combines and balances
+    # the importance of both recall and precision.
+    gridSearch = GridSearchCV(KNeighborsClassifier(), params_grid, cv=3, n_jobs=-1, verbose=1, scoring="f1")
+    gridSearch.fit(trainX, trainY)
+
+    print('Best hyperparameters: ', gridSearch.best_params_)
+    print('Best score: ', gridSearch.best_score_)
+
+    bestKNN = gridSearch.best_estimator_
+    predY = bestKNN.predict(testX)
 
     # Display Classification metrics like precision, recall and support to have an idea on
     # the k-NN model prediction performance
     print(classification_report(predY, testY, target_names=[l for l in labels.values()]))
     conf_mat = confusion_matrix(predY, testY)
 
-    # Plot the classification confusion matrix
+    # Plot the confusion matrix
     plt.figure(figsize=(5, 5))
     plt.imshow(np.array(conf_mat), cmap=plt.get_cmap('summer'), interpolation='nearest')
     for i, row in enumerate(conf_mat):
