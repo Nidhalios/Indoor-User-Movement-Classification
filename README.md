@@ -1,5 +1,6 @@
 # Classification of User Movements in Heterogeneous Indoor Environments
 
+<p align="justify">
 The main objective of this project is use predictive modeling for indoor user movement classification. This would
 have many useful applications in Ambient Assisted Living contexts.
 
@@ -20,6 +21,7 @@ trajectories. Straight movements run from Room 1 to Room 2 or vice versa (paths 
 yields to a change in the spatial context of the user, while curved movements (paths 2, 3, 4 and 6 in Figure
 below) maintain the same spatial context. Table 2 summarizes the statistics of the collected movement types
 for each dataset: due to physical constraints, dataset 1 does not have a curved movement in Room 1 (path 3).
+</p>
 
 ![Alt text](./plots/MovementAAL.jpg?raw=true "Experiement Rooms Config")
 [1] https://archive.ics.uci.edu/ml/datasets/Indoor+User+Movement+Prediction+from+RSS+data
